@@ -1,21 +1,43 @@
 ﻿// Controllers/HomeController.cs
+using Expense_Manager.DataAccess.Repositories;
+using Expense_Manager.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Expense_Manager.Controllers
 {
     public class HomeController : Controller
     {
-        public IActionResult Index()
+        private readonly IIncomeRepository _incomeRepository;
+        private readonly IExpenseRepository _expenseRepository;
+
+        public HomeController(IIncomeRepository incomeRepository, IExpenseRepository expenseRepository)
         {
-            // Custom Security Check: If a user is NOT logged in, 
-            // don't show them the home page; send them straight to the login screen!
+            _incomeRepository = incomeRepository;
+            _expenseRepository = expenseRepository;
+        }
+
+      
+
+        public async Task<IActionResult> Index()
+        {
             if (User.Identity?.IsAuthenticated != true)
             {
                 return RedirectToAction("Login", "Account");
             }
 
-            // If they are logged in, show them the dashboard view
-            return View();
+            var userIdClaim =  User.FindFirstValue(ClaimTypes.NameIdentifier);
+            int userId = int.Parse(userIdClaim ?? "0");
+
+            var incomes = await _incomeRepository.GetIncomeByUserIdAsycn(userId);
+            var expenses = await _expenseRepository.GetExpenseByUserIdAsync(userId);
+
+            var dashboardData = new DashboardViewModel
+            {
+                TotalIncome = incomes.Sum(i => i.Amount),
+                TotalExpense = expenses.Sum(e => e.Amount),
+            };
+            return View(dashboardData);
         }
 
         public IActionResult Privacy()

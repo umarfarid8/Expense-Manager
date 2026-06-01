@@ -1,8 +1,70 @@
-﻿@{
-    ViewData["Title"] = "Login";
+﻿@model Expense_Manager.Models.DashboardViewModel
+
+@{
+    ViewData["Title"] = "Financial Dashboard";
+
+    // Dynamic color helper for Net Savings alert badge
+    string savingsBadgeColor = Model.NetSavings >= 0 ? "bg-primary text-white" : "bg-warning text-dark";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container mt-4">
+    <div class="p-5 mb-4 bg-light rounded-3 shadow-sm border-0">
+        <div class="container-fluid py-2">
+            <h1 class="display-5 fw-bold text-dark">Welcome Back, @User.Identity?.Name! 👋</h1>
+            <p class="col-md-8 fs-5 text-muted">Here is your real-time financial tracking health overview. Keep tabs on your income flow and incoming expense barriers effortlessly.</p>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+
+        <div class="col-md-4">
+            <div class="card bg-success text-white border-0 h-100 shadow rounded-3 transition-hover">
+                <div class="card-body p-4 d-flex flex-column justify-content-between">
+                    <div>
+                        <h6 class="text-uppercase text-white-50 small fw-bold mb-1">Total Cash Inflows</h6>
+                        <h2 class="fw-bold mb-3">Rs. @Model.TotalIncome.ToString("N2")</h2>
+                    </div>
+                    <div class="mt-2">
+                        <a asp-controller="Income" asp-action="Index" class="btn btn-sm btn-light text-success fw-bold px-3 rounded-pill">View Inflows &rarr;</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card bg-danger text-white border-0 h-100 shadow rounded-3 transition-hover">
+                <div class="card-body p-4 d-flex flex-column justify-content-between">
+                    <div>
+                        <h6 class="text-uppercase text-white-50 small fw-bold mb-1">Total Outgoing Costs</h6>
+                        <h2 class="fw-bold mb-3">Rs. @Model.TotalExpense.ToString("N2")</h2>
+                    </div>
+                    <div class="mt-2">
+                        <a asp-controller="Expense" asp-action="Index" class="btn btn-sm btn-light text-danger fw-bold px-3 rounded-pill">View Outgoings &rarr;</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card @savingsBadgeColor border-0 h-100 shadow rounded-3">
+                <div class="card-body p-4 d-flex flex-column justify-content-between">
+                    <div>
+                        <h6 class="text-uppercase text-white-50 small fw-bold mb-1">Net Disposable Savings</h6>
+                        <h2 class="fw-bold mb-3">Rs. @Model.NetSavings.ToString("N2")</h2>
+                    </div>
+                    <div class="mt-2">
+                        @if (Model.NetSavings < 0)
+                        {
+                            <span class="badge bg-white text-danger font-monospace px-3 py-2 rounded-pill fw-bold">⚠️ Budget Deficit Warning</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-white text-primary font-monospace px-3 py-2 rounded-pill fw-bold">✔️ Safe Wallet Status</span>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
 </div>

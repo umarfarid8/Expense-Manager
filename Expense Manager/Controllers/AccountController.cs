@@ -28,6 +28,8 @@ namespace Expense_Manager.Controllers
 
          
         }
+
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel model)
@@ -59,12 +61,18 @@ namespace Expense_Manager.Controllers
             return RedirectToAction("Index", "Home");
 
         }
+        
+        
         [HttpGet]
         public IActionResult Login()
         {
-            if (User.Identity?.IsAuthenticated == true) return RedirectToAction("Index", "Home");
+            if (User.Identity?.IsAuthenticated == true) 
+                return RedirectToAction("Index", "Home");
+
             return View();
         }
+
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel model)
@@ -79,6 +87,7 @@ namespace Expense_Manager.Controllers
             await SignInUserAsync(user);
             return RedirectToAction("Index", "Home");
         }
+
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
